@@ -24,24 +24,25 @@ load((response) => {
                 const liEl = document.createElement('li');
                 const questionTextNode = document.createTextNode(quizObj.question);
                 liEl.appendChild(questionTextNode);
-                // getAnwers(quizObj, liEl);
+                getAnwers(quizObj, liEl);
+                ulEl.appendChild(liEl);
             }
-        )
-        //ulEl.appendChild(liEl);
+        );
+        
         divEl.appendChild(ulEl);
     }
 );
 
-function getAnswers(quizObj, liEl) {
+function getAnwers(quizObj, liEl) {
     const ulEl = document.createElement('ul');
     quizObj.answers.forEach(
         (answerObj) => {
             const liElAnswer = document.createElement('li');
             const liElTextNode = document.createTextNode(answerObj.answer);
             liElAnswer.appendChild(liElTextNode);
+            ulEl.appendChild(liElAnswer);
         }
     );
-    ulEl.appendChild(liElAnswer);
     liEl.appendChild(ulEl);
 }
 
