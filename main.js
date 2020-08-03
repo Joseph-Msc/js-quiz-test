@@ -1,10 +1,12 @@
 const divEl = document.getElementById('container');
 
-function load(callback) {
+function load() {
     const request = getQuizContent('https://run.mocky.io/v3/632e1c5d-fdd4-4e10-a253-803e313bf91a');
     request.onreadystatechange = (res) => {
-        // we want to generate the dom node elements that will represent the html structure of the quiz content.
-        callback(request.responseText);
+        if (request.readyState === 4 && request.status === 200) {
+            // we want to generate the dom node elements that will represent the html structure of the quiz content.
+            callbackFunction(request.responseText);
+        }
     }
     request.send();
 }
@@ -17,29 +19,39 @@ function getQuizContent(url) {
     return http;
 }
 
-load((response) => {
-        const ulEl = document.createElement('ul');
-        JSON.parse(response).data.forEach(
-            (quizObj) => {
-                const liEl = document.createElement('li');
-                const questionTextNode = document.createTextNode(quizObj.question);
-                liEl.appendChild(questionTextNode);
-                getAnwers(quizObj, liEl);
-                ulEl.appendChild(liEl);
-            }
-        );
-        
-        divEl.appendChild(ulEl);
-    }
-);
+load();
 
-function getAnwers(quizObj, liEl) {
+callbackFunction = (response) => {
+    const ulEl = document.createElement('ul');
+    JSON.parse(response).data.forEach(
+        (quizObj) => {
+            const liEl = document.createElement('li');
+            const questionTextNode = document.createTextNode(quizObj.question);
+            liEl.appendChild(questionTextNode);
+            makeAnswersTemplate(quizObj, liEl);
+            ulEl.appendChild(liEl);
+        }
+    );
+
+    divEl.appendChild(ulEl);
+};
+
+function makeAnswersTemplate(quizObj, liEl) {
     const ulEl = document.createElement('ul');
     quizObj.answers.forEach(
         (answerObj) => {
             const liElAnswer = document.createElement('li');
             const liElTextNode = document.createTextNode(answerObj.answer);
             liElAnswer.appendChild(liElTextNode);
+            liElAnswer.onclick = (e) => {
+                e.stopPropagation();
+                liElAnswer.parentElement.childNodes.forEach(
+                    (el) => {
+                        el.style.color = 'black';
+                    }
+                );
+                liElAnswer.style.color = answerObj.correctAnswer === true ? 'green' : 'red';
+            }
             ulEl.appendChild(liElAnswer);
         }
     );
